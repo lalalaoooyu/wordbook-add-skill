@@ -1,0 +1,157 @@
+<title>我的生词本</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+JP:wght@500;700&family=IBM+Plex+Mono&display=swap">
+<style>
+:root{
+  --bg:#f6f7f4; --card:#ffffff; --fg:#1f2a26; --muted:#66746e; --line:#dfe5e1;
+  --en:#2f6f5e; --en-soft:#e3efe9; --ja:#b0453a; --ja-soft:#f6e4e1;
+  --display:"Fraunces",Georgia,serif; --body:"Noto Sans SC","PingFang SC","Hiragino Sans GB",system-ui,sans-serif;
+  --jp:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141a18;--card:#1c2421;--fg:#e6ece9;--muted:#9aa8a2;--line:#2c3733;--en:#7cc4ad;--en-soft:#22332d;--ja:#e8877c;--ja-soft:#3a2523;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141a18;--card:#1c2421;--fg:#e6ece9;--muted:#9aa8a2;--line:#2c3733;--en:#7cc4ad;--en-soft:#22332d;--ja:#e8877c;--ja-soft:#3a2523;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.6}
+.wrap{max-width:720px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-family:var(--display);font-weight:650;font-size:1.9rem;margin:0}
+.sub{color:var(--muted);font-size:.85rem;margin:2px 0 18px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px}
+.tabs button{font:inherit;font-size:.9rem;border:none;background:none;color:var(--muted);border-radius:999px;padding:5px 14px;cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--bg);font-weight:700}
+#tab-en[aria-selected="true"]{background:var(--en)}
+#tab-ja[aria-selected="true"]{background:var(--ja)}
+.tabs .n{font-family:var(--mono);font-size:.75rem;margin-left:4px;opacity:.8}
+#q{flex:1;min-width:140px;font:inherit;font-size:.9rem;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--fg)}
+.list{display:grid;gap:12px}
+.row{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:8px}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.word{font-family:var(--display);font-weight:500;font-size:1.45rem}
+.ja .word{font-family:var(--jp);font-weight:700;font-size:1.35rem}
+.reading{font-family:var(--mono);font-size:.85rem;color:var(--muted)}
+.ja .reading{font-family:var(--jp);font-weight:500}
+.zh{margin-left:auto;font-weight:700}
+.ex{display:flex;gap:10px;align-items:flex-start;font-size:.95rem}
+.ja .ex div{font-family:var(--jp)}
+.ex em{display:block;font-style:normal;font-family:var(--body);color:var(--muted);font-size:.85rem}
+.tip{font-size:.82rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:8px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.date{font-family:var(--mono);font-size:.75rem}
+.spk{flex:none;width:36px;height:36px;border-radius:50%;border:none;background:var(--en-soft);color:var(--en);cursor:pointer;display:grid;place-items:center}
+.ja .spk{background:var(--ja-soft);color:var(--ja)}
+.spk.small{width:30px;height:30px}
+.spk.playing,.spk:hover{background:var(--en);color:var(--bg)}
+.ja .spk.playing,.ja .spk:hover{background:var(--ja);color:var(--bg)}
+.spk svg{width:17px;height:17px}
+button:focus-visible,#q:focus-visible{outline:2px solid var(--en);outline-offset:2px}
+.empty{border:1px dashed var(--line);border-radius:12px;padding:28px 18px;text-align:center;color:var(--muted);font-size:.9rem}
+.empty b{display:block;color:var(--fg);font-size:1rem;margin-bottom:4px}
+.status{font-size:.8rem;color:var(--muted);margin-top:16px}
+.kinds{display:flex;gap:6px;margin:-4px 0 14px}
+.kinds button{font:inherit;font-size:.8rem;border:1px solid var(--line);background:none;color:var(--muted);border-radius:999px;padding:2px 12px;cursor:pointer}
+.kinds button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chip{font-size:.7rem;letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 6px}
+.sentence .top{align-items:flex-start;flex-wrap:nowrap}
+.sentence .word{font-family:var(--body);font-weight:500;font-size:1.1rem;line-height:1.5;flex:1;min-width:0}
+.ja.sentence .word{font-family:var(--jp);font-size:1.1rem}
+.sentence .zh{margin-left:0;font-weight:400;color:var(--fg)}
+.sentence .reading{display:block;margin-top:2px}
+</style>
+
+<div class="wrap">
+  <h1>我的生词本</h1>
+  <p class="sub">在聊天里问 Claude 的单词和句子会记到这里。点喇叭听发音。</p>
+  <div class="bar">
+    <div class="tabs" role="tablist">
+      <button id="tab-en" role="tab" aria-selected="true" data-lang="en">英语<span class="n" id="n-en">0</span></button>
+      <button id="tab-ja" role="tab" aria-selected="false" data-lang="ja">日语<span class="n" id="n-ja">0</span></button>
+    </div>
+    <input id="q" type="search" placeholder="搜索单词或中文" aria-label="搜索">
+  </div>
+  <div class="kinds" role="group" aria-label="类型">
+    <button id="k-all" type="button" data-kind="all" aria-pressed="true">全部</button>
+    <button id="k-word" type="button" data-kind="word" aria-pressed="false">单词</button>
+    <button id="k-sentence" type="button" data-kind="sentence" aria-pressed="false">句子</button>
+  </div>
+  <div class="list" id="list"><div class="empty"><b>正在载入生词…</b></div></div>
+  <p class="status" id="status"></p>
+</div>
+
+<script>
+const icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+let words=[],tab='en',query='',loaded=false,kind='all';
+const kindOf=w=>w.type==='sentence'?'sentence':'word';
+document.querySelectorAll('.kinds button').forEach(b=>b.onclick=()=>{kind=b.dataset.kind;document.querySelectorAll('.kinds button').forEach(x=>x.setAttribute('aria-pressed',x===b));render()});
+try{const t=localStorage.getItem('tab');if(t==='en'||t==='ja')tab=t}catch(e){}
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function setTab(t){tab=t;document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.lang===t));try{localStorage.setItem('tab',t)}catch(e){}render()}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.lang));
+document.getElementById('q').addEventListener('input',e=>{query=e.target.value.trim().toLowerCase();render()});
+
+function render(){
+  document.getElementById('n-en').textContent=words.filter(w=>w.lang==='en').length;
+  document.getElementById('n-ja').textContent=words.filter(w=>w.lang==='ja').length;
+  const list=document.getElementById('list');
+  if(!loaded)return;
+  let items=words.filter(w=>w.lang===tab);
+  if(kind!=='all')items=items.filter(w=>kindOf(w)===kind);
+  if(query)items=items.filter(w=>[w.word,w.reading,w.zh].join(' ').toLowerCase().includes(query));
+  if(!items.length){
+    list.innerHTML=query?'<div class="empty"><b>没有找到</b>换个关键词试试</div>'
+      :kind==='sentence'?`<div class="empty"><b>还没有${tab==='en'?'英语':'日语'}句子</b>在聊天里问一个句子的意思或说法，就会出现在这里。</div>`
+      :`<div class="empty"><b>还没有${tab==='en'?'英语':'日语'}生词</b>在聊天里说一句，比如"帮我记一下 ${tab==='en'?'serendipity':'懐かしい'}"，就会出现在这里。</div>`;
+    return;
+  }
+  list.innerHTML='';
+  items.forEach(w=>{
+    const r=document.createElement('article');r.className='row '+w.lang+' '+kindOf(w);
+    const d=w.added?String(w.added).slice(0,10):'';
+    if(kindOf(w)==='sentence'){
+      r.innerHTML=`<div class="top"><button class="spk" type="button" aria-label="朗读句子">${icon}</button><div class="word" lang="${w.lang}">${esc(w.word)}${w.reading?`<span class="reading">${esc(w.reading)}</span>`:''}</div></div>`+
+        `<div class="zh">${esc(w.zh)}</div>`+
+        `<div class="tip"><span>${w.tip?esc(w.tip):''}</span><span><span class="chip">句子</span> <span class="date">${esc(d)}</span></span></div>`;
+      r.querySelector('.spk').onclick=e=>speak(w.speak||w.word,w.lang,e.currentTarget,0.95);
+      list.appendChild(r);return;
+    }
+    r.innerHTML=`<div class="top"><button class="spk" type="button" aria-label="朗读 ${esc(w.word)}">${icon}</button><span class="word" lang="${w.lang}">${esc(w.word)}</span><span class="reading">${esc(w.reading)}</span><span class="zh">${esc(w.zh)}</span></div>`+
+      (w.ex?`<div class="ex"><button class="spk small" type="button" aria-label="朗读例句">${icon}</button><div lang="${w.lang}">${esc(w.ex)}<em>${esc(w.exzh)}</em></div></div>`:'')+
+      `<div class="tip"><span>${esc(w.tip)}</span><span class="date">${esc(d)}</span></div>`;
+    const btns=r.querySelectorAll('.spk');
+    btns[0].onclick=e=>speak(w.speak||w.word,w.lang,e.currentTarget,0.85);
+    if(btns[1])btns[1].onclick=e=>speak(w.ex,w.lang,e.currentTarget,0.95);
+    list.appendChild(r);
+  });
+}
+function pickVoice(code){const vs=speechSynthesis.getVoices();return vs.find(v=>v.lang.replace('_','-')===code)||vs.find(v=>v.lang.startsWith(code.slice(0,2)))}
+function note(msg){const s=document.getElementById('status');s.textContent=msg}
+function speak(text,lang,btn,rate){
+  if(!('speechSynthesis' in window)){note('这个浏览器不支持网页朗读，换 Chrome 或 Safari 打开试试。');return}
+  const code=lang==='ja'?'ja-JP':'en-US';
+  const ss=window.speechSynthesis;
+  const go=()=>{
+    const u=new SpeechSynthesisUtterance(text);u.lang=code;u.rate=rate;u.volume=1;
+    const v=pickVoice(code);if(v)u.voice=v;
+    document.querySelectorAll('.spk.playing').forEach(b=>b.classList.remove('playing'));
+    btn.classList.add('playing');
+    let started=false;
+    u.onstart=()=>{started=true;note('')};
+    u.onend=()=>btn.classList.remove('playing');
+    u.onerror=e=>{btn.classList.remove('playing');if(e.error!=='interrupted'&&e.error!=='canceled')note('朗读失败（'+e.error+'）。设备上可能没有'+(lang==='ja'?'日语':'英语')+'语音。')};
+    setTimeout(()=>{if(!started&&!ss.speaking){btn.classList.remove('playing');const n=ss.getVoices().length;note(n?'没有发出声音。请检查音量和静音开关（iPhone 侧面的静音键也会让朗读没声音）。':'这个窗口里没有可用的语音。试试用手机或电脑的浏览器（Safari / Chrome）直接打开这个页面。')}},1500);
+    ss.resume();ss.speak(u);
+  };
+  if(ss.speaking||ss.pending){ss.cancel();setTimeout(go,80)}else go();
+}
+if('speechSynthesis' in window)speechSynthesis.getVoices();
+setTab(tab);
+
+(async()=>{
+  const status=document.getElementById('status');
+  const db=window.claude?await window.claude.use('db'):null;
+  if(!db){loaded=true;document.getElementById('list').innerHTML='<div class="empty"><b>暂时读不到生词</b>登录 claude.ai 后打开这个页面就能看到。</div>';return}
+  const timer=setTimeout(()=>{status.textContent='生词还没载入，可能是网络较慢。'},10000);
+  db.collection('words').orderBy('added','desc').onSnapshot(snap=>{
+    words=snap.docs.map(d=>({id:d.id,...d.data()}));loaded=true;
+    if(!snap.metadata.fromCache){clearTimeout(timer);status.textContent=''}
+    render();
+  },err=>{clearTimeout(timer);loaded=true;status.textContent='生词载入失败，请稍后刷新页面。';render()});
+})();
+</script>
